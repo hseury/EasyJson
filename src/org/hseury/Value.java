@@ -1,6 +1,8 @@
 package org.hseury;
 
+import static org.hseury.Value.JSON_TYPE.EASY_FALSE;
 import static org.hseury.Value.JSON_TYPE.EASY_NULL;
+import static org.hseury.Value.JSON_TYPE.EASY_TRUE;
 import static org.hseury.Value.PARSE_RESULT.*;
 
 /**
@@ -23,6 +25,9 @@ public class Value {
     }
 
     public static final int NULL_LENGTH = 4;
+    public static final int TRUE_LENGTH = 4;
+    public static final int FALSE_LENGTH = 5;
+
 
     public JSON_TYPE type;
 
@@ -41,7 +46,7 @@ public class Value {
         context.json = context.json.substring(i);
         ret = parseValue(context, value);
         if ( ret == PARSE_RESULT.LEPT_PARSE_OK) {
-            int j = parseWhitespace(context, i + NULL_LENGTH);
+            int j = parseWhitespace(context, i + getLengthByType(value));
             if ( j < context.json.length()) {
                 ret = LEPT_PARSE_ROOT_NOT_SINGULAR;
             }
@@ -85,6 +90,32 @@ public class Value {
         }
     }
 
+    public static PARSE_RESULT parseTrue(Context context, Value value) {
+        String json = context.json;
+        if (TextUtils.isEmpty(json)) {
+            return LEPT_PARSE_EXPECT_VALUE;
+        }
+        if (json.length() > 3 && json.charAt(0) == 't' && json.charAt(1) == 'r' && json.charAt(2) == 'u' && json.charAt(3) == 'e') {
+            value.type = EASY_TRUE;
+            return LEPT_PARSE_OK;
+        }else{
+            return LEPT_PARSE_INVALID_VALUE;
+        }
+    }
+
+    public static PARSE_RESULT parseFalse(Context context, Value value) {
+        String json = context.json;
+        if (TextUtils.isEmpty(json)) {
+            return LEPT_PARSE_EXPECT_VALUE;
+        }
+        if (json.length() > 4 && json.charAt(0) == 'f' && json.charAt(1) == 'a' && json.charAt(2) == 'l' && json.charAt(3) == 's' && json.charAt(4) == 'e') {
+            value.type = EASY_FALSE;
+            return LEPT_PARSE_OK;
+        } else {
+            return LEPT_PARSE_INVALID_VALUE;
+        }
+    }
+
 
     public static PARSE_RESULT parseValue(Context context, Value value) {
         String json = context.json;
@@ -94,12 +125,33 @@ public class Value {
         switch (json.charAt(0)) {
             case 'n':
                 return parseNull(context, value);
+            case 't':
+                return parseTrue(context,value);
+            case 'f':
+                return parseFalse(context,value);
             case '\0':
                 return LEPT_PARSE_EXPECT_VALUE;
             //todo: true /false
             default:
                 return LEPT_PARSE_INVALID_VALUE;
         }
+    }
+
+    private static int getLengthByType(Value value) {
+        if (value == null) {
+            return 0;
+        }
+        switch (value.type) {
+            case EASY_NULL:
+                return NULL_LENGTH;
+            case EASY_TRUE:
+                return TRUE_LENGTH;
+            case EASY_FALSE:
+                return FALSE_LENGTH;
+            default:
+                return 0;
+        }
+
     }
 
 }

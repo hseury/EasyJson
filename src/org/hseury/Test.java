@@ -11,6 +11,8 @@ public class Test {
 
     public static void testParse() {
         testParseNull();
+        testParseTrue();
+        testParseFalse();
         testParseExpectValue();
         testParseInvalidValue();
         testParseRootNotSingular();
@@ -20,6 +22,20 @@ public class Test {
         v.type = Value.JSON_TYPE.EASY_FALSE;
         expectEqualInt(Value.PARSE_RESULT.LEPT_PARSE_OK,Value.parse(v,"null"));
         expectEqualInt(Value.JSON_TYPE.EASY_NULL,Value.getType(v));
+    }
+
+    private static void testParseTrue() {
+        Value  v = new Value();
+        v.type = Value.JSON_TYPE.EASY_FALSE;
+        expectEqualInt(Value.PARSE_RESULT.LEPT_PARSE_OK,Value.parse(v,"true"));
+        expectEqualInt(Value.JSON_TYPE.EASY_TRUE,Value.getType(v));
+    }
+
+    private static void testParseFalse() {
+        Value  v = new Value();
+        v.type = Value.JSON_TYPE.EASY_TRUE;
+        expectEqualInt(Value.PARSE_RESULT.LEPT_PARSE_OK,Value.parse(v,"false"));
+        expectEqualInt(Value.JSON_TYPE.EASY_FALSE,Value.getType(v));
     }
 
 

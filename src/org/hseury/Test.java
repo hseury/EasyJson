@@ -1,5 +1,9 @@
 package org.hseury;
 
+import static org.hseury.Value.PARSE_RESULT.LEPT_PARSE_EXPECT_VALUE;
+import static org.hseury.Value.PARSE_RESULT.LEPT_PARSE_INVALID_VALUE;
+import static org.hseury.Value.PARSE_RESULT.LEPT_PARSE_ROOT_NOT_SINGULAR;
+
 /**
  * Created by hseury on 2018/5/11.
  */
@@ -40,35 +44,17 @@ public class Test {
 
 
     private static void testParseExpectValue() {
-        Value  v = new Value();
-
-        v.type = Value.JSON_TYPE.EASY_FALSE;
-        expectEqualInt(Value.PARSE_RESULT.LEPT_PARSE_EXPECT_VALUE,Value.parse(v,""));
-        expectEqualInt(Value.JSON_TYPE.EASY_NULL,Value.getType(v));
-
-        v.type = Value.JSON_TYPE.EASY_FALSE;
-        expectEqualInt(Value.PARSE_RESULT.LEPT_PARSE_EXPECT_VALUE,Value.parse(v," "));
-        expectEqualInt(Value.JSON_TYPE.EASY_NULL,Value.getType(v));
+        testError(LEPT_PARSE_EXPECT_VALUE,"");
+        testError(LEPT_PARSE_EXPECT_VALUE," ");
     }
 
     private static void testParseInvalidValue() {
-        Value  v = new Value();
-
-        v.type = Value.JSON_TYPE.EASY_FALSE;
-        expectEqualInt(Value.PARSE_RESULT.LEPT_PARSE_INVALID_VALUE,Value.parse(v,"nul"));
-        expectEqualInt(Value.JSON_TYPE.EASY_NULL,Value.getType(v));
-
-        v.type = Value.JSON_TYPE.EASY_FALSE;
-        expectEqualInt(Value.PARSE_RESULT.LEPT_PARSE_INVALID_VALUE,Value.parse(v,"?"));
-        expectEqualInt(Value.JSON_TYPE.EASY_NULL,Value.getType(v));
+        testError(LEPT_PARSE_INVALID_VALUE,"nul");
+        testError(LEPT_PARSE_INVALID_VALUE,"?");
     }
 
     private static void testParseRootNotSingular() {
-        Value  v = new Value();
-
-        v.type = Value.JSON_TYPE.EASY_FALSE;
-        expectEqualInt(Value.PARSE_RESULT.LEPT_PARSE_ROOT_NOT_SINGULAR,Value.parse(v,"null   x"));
-        expectEqualInt(Value.JSON_TYPE.EASY_NULL,Value.getType(v));
+        testError(LEPT_PARSE_ROOT_NOT_SINGULAR,"null   x");
     }
 
 
@@ -86,5 +72,13 @@ public class Test {
         else {
             System.out.println("stderr expect : " + expect + " actual : " + actual);
         }
+    }
+
+    public static void testError(Value.PARSE_RESULT error, String json){
+        Value  v = new Value();
+
+        v.type = Value.JSON_TYPE.EASY_FALSE;
+        expectEqualInt(error,Value.parse(v,json));
+        expectEqualInt(Value.JSON_TYPE.EASY_NULL,Value.getType(v));
     }
 }
